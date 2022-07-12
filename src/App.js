@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-// import WatchList from "./pages/WatchList";
-// import Details from "./pages/Details";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 // import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import CekOngkir from "./pages/CekOngkir";
@@ -37,7 +36,10 @@ function App() {
       <Route index path="/login" element={<Login />} />
       <Route path="home">
         <Route index element={<Home />} />
-        <Route path="cek-ongkir" element={<CekOngkir />} />
+        <Route
+          path="cek-ongkir"
+          element={<ProtectedRoute component={<CekOngkir />} />}
+        />
         <Route path="cek-resi" element={<CekResi />} />
       </Route>
     </Routes>

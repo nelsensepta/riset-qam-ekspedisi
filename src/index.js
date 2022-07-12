@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Auth0Provider } from "@auth0/auth0-react";
@@ -14,18 +15,18 @@ const client = new ApolloClient({
 });
 root.render(
   <React.StrictMode>
-    <Auth0Provider
-      domain={process.env.REACT_APP_AUTH_DOMAIN}
-      clientId={process.env.REACT_APP_AUTH_CLIENTID}
-      redirectUri={process.env.REACT_APP_BASE_URL}
-      scope="read:current_user update:current_user_metadata"
-    >
-      <ApolloProvider client={client}>
+    <ApolloProvider client={client}>
+      <Auth0Provider
+        domain={process.env.REACT_APP_AUTH_DOMAIN}
+        clientId={process.env.REACT_APP_AUTH_CLIENTID}
+        redirectUri={process.env.REACT_APP_BASE_URL}
+        scope="read:current_user update:current_user_metadata"
+      >
         <BrowserRouter>
           <App />
         </BrowserRouter>
-      </ApolloProvider>
-    </Auth0Provider>
+      </Auth0Provider>
+    </ApolloProvider>
   </React.StrictMode>
 );
 
