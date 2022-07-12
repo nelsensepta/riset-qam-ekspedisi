@@ -4,8 +4,14 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { BrowserRouter } from "react-router-dom";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+const client = new ApolloClient({
+  uri: "https://graphql-pokeapi.vercel.app/api/graphql",
+  cache: new InMemoryCache(),
+});
 root.render(
   <React.StrictMode>
     <Auth0Provider
@@ -14,7 +20,11 @@ root.render(
       redirectUri={process.env.REACT_APP_BASE_URL}
       scope="read:current_user update:current_user_metadata"
     >
-      <App />
+      <ApolloProvider client={client}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ApolloProvider>
     </Auth0Provider>
   </React.StrictMode>
 );
