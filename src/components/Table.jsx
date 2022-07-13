@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import { CustomizedButton as Button } from "../components/CustomizedButton";
 
 const columns = [
   { field: "id", headerName: "ID", flex: 0.25, minWidth: 60 },
@@ -9,6 +10,7 @@ const columns = [
     field: "age",
     headerName: "Age",
     flex: 0.75,
+    editable: true,
     minWidth: 60,
   },
   {
@@ -17,14 +19,29 @@ const columns = [
     // description: "This column has a value getter and is not sortable.",
     // sortable: false,
     flex: 1,
+
     minWidth: 160,
     valueGetter: (params) =>
       `${params.row.firstName || ""} ${params.row.lastName || ""}`,
   },
+  {
+    field: "action",
+    headerName: "Action",
+    flex: 0.75,
+    disableColumnSelector: false,
+    sortable: false,
+    minWidth: 60,
+  },
 ];
 
 const rows = [
-  { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
+  {
+    id: 1,
+    lastName: "Snow",
+    firstName: "Jon",
+    age: 35,
+    action: <Button onClick={() => console.log("ok")}>Add New Resi</Button>,
+  },
   { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
   { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
   { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },

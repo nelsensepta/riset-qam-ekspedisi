@@ -12,6 +12,7 @@ import { TransitionsModal as Modal } from "../components/TransitionsModal";
 import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import Tables from "../components/Tables";
 
 export default function CekResi() {
   const top100Films = [
@@ -71,7 +72,8 @@ export default function CekResi() {
         </Stack>
       </Modal>
       <ThreeDots color="#00BFFF" height={100} width={100} />
-      <Table />
+      {/* <Table /> */}
+      <Tables />
     </Layout>
   );
 }
