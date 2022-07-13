@@ -4,6 +4,8 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
+import { useRecoilState } from "recoil";
+import { openState } from "../atoms";
 import Typography from "@mui/material/Typography";
 
 const style = {
@@ -19,25 +21,22 @@ const style = {
 };
 
 export function TransitionsModal({ children }) {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
+  const [isOpen, setIsOpen] = useRecoilState(openState);
   return (
     <div>
-      <Button onClick={handleOpen}>Open modal</Button>
+      {/* <Button onClick={handleOpen}>Open modal</Button> */}
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
-        open={open}
-        onClose={handleClose}
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
           timeout: 500,
         }}
       >
-        <Fade in={open}>
+        <Fade in={isOpen}>
           <Box sx={style}>{children}</Box>
         </Fade>
       </Modal>

@@ -35,12 +35,15 @@ function App() {
     <Routes>
       <Route index path="/login" element={<Login />} />
       <Route path="home">
-        <Route index element={<Home />} />
+        <Route index element={<ProtectedRoute component={Home} />} />
         <Route
           path="cek-ongkir"
-          element={<ProtectedRoute component={<CekOngkir />} />}
+          element={<ProtectedRoute component={CekOngkir} />}
         />
-        <Route path="cek-resi" element={<CekResi />} />
+        <Route
+          path="cek-resi"
+          element={<ProtectedRoute component={CekResi} />}
+        />
       </Route>
     </Routes>
   );
