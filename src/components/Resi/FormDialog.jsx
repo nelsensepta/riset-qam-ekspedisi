@@ -14,29 +14,20 @@ export default function FormDialog({
   onChange,
   handleFormSubmit,
 }) {
-  const { id_kab, nama, harga_ongkir } = data;
+  const { id, no_resi } = data;
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} fullWidth>
+      <Dialog open={open} onClose={handleClose} fullWidth={true}>
         <DialogTitle>
-          {id_kab ? `Update Ongkir ${nama}` : "Add New Ongkir"}
+          {id ? `Update Resi ${no_resi}` : "Add New Resi"}
         </DialogTitle>
         <DialogContent>
           <form>
             <TextField
-              name="nama"
-              value={nama}
+              name="no_resi"
+              value={no_resi}
               onChange={(e) => onChange(e)}
-              label="nama"
-              variant="outlined"
-              margin="dense"
-              fullWidth
-            />
-            <TextField
-              name="harga_ongkir"
-              value={harga_ongkir}
-              onChange={(e) => onChange(e)}
-              label="harga_ongkir Number"
+              label="No Resi"
               variant="outlined"
               margin="dense"
               fullWidth
@@ -57,7 +48,7 @@ export default function FormDialog({
             onClick={() => handleFormSubmit()}
             variant="contained"
           >
-            {id_kab ? "Update" : "Submit"}
+            {id ? "Update" : "Submit"}
           </Button>
         </DialogActions>
       </Dialog>

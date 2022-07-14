@@ -5,18 +5,33 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { gql, useMutation } from "@apollo/client";
 
-export default function AlertDialog() {
-  const [open, setOpen] = React.useState(false);
-
+export default function AlertDialog({ alertHandleClose, alertOpen, id }) {
+  const DELETE_ONGKIR = gql`
+    mutation MyMutation($id_kab: uuid = "") {
+      delete_cek_ongkir_by_pk(id_kab: $id_kab) {
+        harga_ongkir
+        id_kab
+        id_prov
+        nama
+      }
+    }
+  `;
+  const [deleteData] = useMutation(DELETE_ONGKIR, {
+    variables: {
+      id_kab: id,
+    },
+  });
+  const handleAlert = () => {
+    deleteData();
+    alertHandleClose();
+  };
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open alert dialog
-      </Button>
       <Dialog
-        open={open}
-        onClose={handleClose}
+        open={alertOpen}
+        onClose={alertHandleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -30,8 +45,8 @@ export default function AlertDialog() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Disagree</Button>
-          <Button onClick={handleClose} autoFocus>
+          <Button onClick={alertHandleClose}>Disagree</Button>
+          <Button onClick={handleAlert} autoFocus>
             Agree
           </Button>
         </DialogActions>

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 
 import {
   Box,
@@ -14,10 +14,6 @@ import {
   Tooltip,
 } from "@mui/material";
 
-import { useRecoilState } from "recoil";
-
-import { openState } from "../atoms";
-
 import EnhancedTableHead from "./Table/EnhancedTableHead";
 import TablePaginationActions from "./Table/TablePaginationActions";
 import EnhancedTableToolbar from "./Table/EnhancedTableToolbar";
@@ -26,19 +22,26 @@ import stableSort from "../utils/stableSort";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { EditModal } from "./Resi";
-import DeleteData from "./DeleteData";
-import UpdateData from "./UpdateData";
+import FormDialog from "./Resi/FormDialog";
+import { CustomizedButton as Button } from "./CustomizedButton";
 
+import { gql, useMutation } from "@apollo/client";
+
+const initialValue = { no_resi: "" };
 export default function Tables({ data, headCells }) {
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("");
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [isOpen, setIsOpen] = useRecoilState(openState);
-  const [id, setId] = React.useState("");
-  const [value, setValue] = React.useState("");
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("");
+  const [selected, setSelected] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [id, setId] = useState("");
+
+  // formDialog
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState(initialValue);
+
+  // AlertDialog
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -87,18 +90,85 @@ export default function Tables({ data, headCells }) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
+  const handleUpdate = (oldData) => {
+    setFormData(oldData);
+    handleClickOpen();
+  };
+
+  const onChange = (e) => {
+    const { value, name } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setFormData(initialValue);
+  };
+
+  const UPDATE_RESI = gql`
+    mutation MyMutation($id: uuid = "", $no_resi: String = "") {
+      update_cek_resi_by_pk(
+        pk_columns: { id: $id }
+        _set: { no_resi: $no_resi }
+      ) {
+        no_resi
+        id
+      }
+    }
+  `;
+  const ADD_RESI = gql`
+    mutation MyMutation($no_resi: String = "") {
+      insert_cek_resi_one(object: { no_resi: $no_resi }) {
+        id
+        no_resi
+      }
+    }
+  `;
+
+  const [updateResi] = useMutation(UPDATE_RESI, {
+    variables: {
+      id: formData?.id,
+      no_resi: formData?.no_resi,
+    },
+  });
+  const [addResi] = useMutation(ADD_RESI, {
+    variables: {
+      no_resi: formData?.no_resi,
+    },
+  });
+
   const handleDelete = (id) => {
-    setIsOpen(true);
+    setAlertOpen(true);
     setId(id);
   };
-  const handleUpdate = (id, resi) => {
-    setIsOpen(true);
-    setId(id);
-    setValue(resi);
+  const handleFormSubmit = () => {
+    if (formData.id) {
+      // alert("update");
+      updateResi();
+      handleClose();
+    } else {
+      addResi();
+      // alert("add");
+      handleClose();
+    }
   };
 
   return (
     <>
+      <FormDialog
+        open={open}
+        handleClose={handleClose}
+        data={formData}
+        onChange={onChange}
+        handleFormSubmit={handleFormSubmit}
+      />
+      <Button onClick={handleClickOpen} sx={{ px: 2, py: 1, mb: 4 }}>
+        Add New Resi
+      </Button>
       <Box sx={{ width: "100%" }}>
         <Paper sx={{ width: "100%", mb: 2 }}>
           <EnhancedTableToolbar numSelected={selected.length} />
@@ -154,11 +224,7 @@ export default function Tables({ data, headCells }) {
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Update">
-                            <IconButton
-                              onClick={() =>
-                                handleUpdate(item.id, item.no_resi)
-                              }
-                            >
+                            <IconButton onClick={() => handleUpdate(item)}>
                               <EditIcon />
                             </IconButton>
                           </Tooltip>
@@ -193,9 +259,6 @@ export default function Tables({ data, headCells }) {
           />
         </Paper>
       </Box>
-      <EditModal id={id} resi={value} />
-      {/* <DeleteData id={id} />
-      <UpdateData id={id} resi={value} /> */}
     </>
   );
 }

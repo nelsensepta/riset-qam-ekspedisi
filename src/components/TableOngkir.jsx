@@ -1,5 +1,4 @@
-import * as React from "react";
-
+import { useState } from "react";
 import {
   Box,
   Table,
@@ -14,9 +13,6 @@ import {
   Tooltip,
 } from "@mui/material";
 
-import { useRecoilState } from "recoil";
-import { openState } from "../atoms";
-
 import EnhancedTableHead from "./Table/EnhancedTableHead";
 import TablePaginationActions from "./Table/TablePaginationActions";
 import EnhancedTableToolbar from "./Table/EnhancedTableToolbar";
@@ -24,28 +20,25 @@ import getComparator from "../utils/getComparator";
 import stableSort from "../utils/stableSort";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteData from "./DeleteData";
-import UpdateData from "./UpdateData";
-import { EditModal, DeleteModal } from "./Ongkir";
 import FormDialog from "./Ongkir/FormDialog";
-
 import { CustomizedButton as Button } from "./CustomizedButton";
 import { gql, useMutation } from "@apollo/client";
+import AlertDialog from "./AlertDialog";
 
 const initialValue = { nama: "", harga_ongkir: "" };
 export default function TableOngkir({ data, headCells }) {
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("");
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [isOpen, setIsOpen] = useRecoilState(openState);
-  const [id, setId] = React.useState("");
-  const [value, setValue] = React.useState();
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("");
+  const [selected, setSelected] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [id, setId] = useState("");
+  // formDialog
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState(initialValue);
 
-  const [open, setOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(initialValue);
-  // console.log(value);
+  // AlertDialog
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -94,10 +87,6 @@ export default function TableOngkir({ data, headCells }) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
-  const handleDelete = (id) => {
-    setIsOpen(true);
-    setId(id);
-  };
   const handleUpdate = (oldData) => {
     setFormData(oldData);
     handleClickOpen();
@@ -105,7 +94,6 @@ export default function TableOngkir({ data, headCells }) {
 
   const onChange = (e) => {
     const { value, name } = e.target;
-    // console.log(value,id)
     setFormData({ ...formData, [name]: value });
   };
 
@@ -167,6 +155,10 @@ export default function TableOngkir({ data, headCells }) {
       nama: formData?.nama,
     },
   });
+  const handleDelete = (id) => {
+    setAlertOpen(true);
+    setId(id);
+  };
   const handleFormSubmit = () => {
     if (formData.id_kab) {
       updateOngkir();
@@ -175,6 +167,10 @@ export default function TableOngkir({ data, headCells }) {
       addOngkir();
       handleClose();
     }
+  };
+
+  const alertHandleClose = () => {
+    setAlertOpen(false);
   };
 
   return (
@@ -186,7 +182,14 @@ export default function TableOngkir({ data, headCells }) {
         onChange={onChange}
         handleFormSubmit={handleFormSubmit}
       />
-      <Button onClick={handleClickOpen}>add</Button>
+      <AlertDialog
+        alertOpen={alertOpen}
+        alertHandleClose={alertHandleClose}
+        id={id}
+      />
+      <Button onClick={handleClickOpen} sx={{ px: 2, py: 1, mb: 4 }}>
+        Add New Ongkir
+      </Button>
       <Box sx={{ width: "100%" }}>
         <Paper sx={{ width: "100%", mb: 2 }}>
           <EnhancedTableToolbar numSelected={selected.length} />
@@ -283,10 +286,6 @@ export default function TableOngkir({ data, headCells }) {
           />
         </Paper>
       </Box>
-      {isOpen && <EditModal items={value} />}
-      {isOpen && <DeleteModal id={id} />}
-      {/* <DeleteData id={id} /> */}
-      {/* <UpdateData id={id} resi={value} /> */}
     </>
   );
 }
