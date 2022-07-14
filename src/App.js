@@ -33,7 +33,7 @@ function App() {
 
   return (
     <Routes>
-      <Route index path="/login" element={<Login />} />
+      <Route index path="/" element={<Login />} />
       <Route path="home">
         <Route index element={<ProtectedRoute component={Home} />} />
         <Route

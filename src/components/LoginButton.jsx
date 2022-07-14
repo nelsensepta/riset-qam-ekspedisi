@@ -1,21 +1,20 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button } from "@mui/material";
+import { CustomizedButton as Button } from "./CustomizedButton";
+import LoginIcon from "@mui/icons-material/Login";
 
 const LoginButton = () => {
-  const { loginWithRedirect, isAuthenticated } = useAuth0();
+  const { loginWithRedirect } = useAuth0();
 
   return (
-    !isAuthenticated && (
-      <Button
-        onClick={() => loginWithRedirect()}
-        target="_blank"
-        rel="noopener noreferrer"
-        variant="contained"
-        color="primary"
-      >
-        Sign In
-      </Button>
-    )
+    <Button
+      startIcon={<LoginIcon />}
+      onClick={() => {
+        return loginWithRedirect();
+      }}
+      color="secondary"
+    >
+      Login
+    </Button>
   );
 };
 

@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 
 import { useRecoilState } from "recoil";
-
 import { openState } from "../atoms";
 
 import EnhancedTableHead from "./Table/EnhancedTableHead";
@@ -23,14 +22,18 @@ import TablePaginationActions from "./Table/TablePaginationActions";
 import EnhancedTableToolbar from "./Table/EnhancedTableToolbar";
 import getComparator from "../utils/getComparator";
 import stableSort from "../utils/stableSort";
-
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { EditModal } from "./Resi";
 import DeleteData from "./DeleteData";
 import UpdateData from "./UpdateData";
+import { EditModal, DeleteModal } from "./Ongkir";
+import FormDialog from "./Ongkir/FormDialog";
 
-export default function Tables({ data, headCells }) {
+import { CustomizedButton as Button } from "./CustomizedButton";
+import { gql, useMutation } from "@apollo/client";
+
+const initialValue = { nama: "", harga_ongkir: "" };
+export default function TableOngkir({ data, headCells }) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("");
   const [selected, setSelected] = React.useState([]);
@@ -38,7 +41,11 @@ export default function Tables({ data, headCells }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [isOpen, setIsOpen] = useRecoilState(openState);
   const [id, setId] = React.useState("");
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState();
+
+  const [open, setOpen] = React.useState(false);
+  const [formData, setFormData] = React.useState(initialValue);
+  // console.log(value);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -48,7 +55,7 @@ export default function Tables({ data, headCells }) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = data.map((n) => n.id);
+      const newSelecteds = data.map((n) => n.id_kab);
       setSelected(newSelecteds);
       return;
     }
@@ -91,14 +98,95 @@ export default function Tables({ data, headCells }) {
     setIsOpen(true);
     setId(id);
   };
-  const handleUpdate = (id, resi) => {
-    setIsOpen(true);
-    setId(id);
-    setValue(resi);
+  const handleUpdate = (oldData) => {
+    setFormData(oldData);
+    handleClickOpen();
+  };
+
+  const onChange = (e) => {
+    const { value, name } = e.target;
+    // console.log(value,id)
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setFormData(initialValue);
+  };
+
+  const UPDATE_ONGKIR = gql`
+    mutation MyMutation(
+      $id_kab: uuid = ""
+      $nama: String = ""
+      $harga_ongkir: String = ""
+    ) {
+      update_cek_ongkir_by_pk(
+        pk_columns: { id_kab: $id_kab }
+        _set: { nama: $nama, harga_ongkir: $harga_ongkir }
+      ) {
+        id_kab
+        id_prov
+        harga_ongkir
+        nama
+      }
+    }
+  `;
+  const ADD_ONGKIR = gql`
+    mutation MyMutation(
+      $harga_ongkir: String = ""
+      $nama: String = ""
+      $id_kab: uuid = ""
+      $harga_ongkir1: String = ""
+      $nama1: String = ""
+    ) {
+      insert_cek_ongkir_one(
+        object: { harga_ongkir: $harga_ongkir, nama: $nama }
+      ) {
+        id_kab
+        harga_ongkir
+        id_prov
+        nama
+      }
+    }
+  `;
+
+  const [updateOngkir] = useMutation(UPDATE_ONGKIR, {
+    variables: {
+      id_kab: formData?.id_kab,
+      harga_ongkir: formData?.harga_ongkir,
+      nama: formData?.nama,
+    },
+  });
+  const [addOngkir] = useMutation(ADD_ONGKIR, {
+    variables: {
+      harga_ongkir: formData?.harga_ongkir,
+      nama: formData?.nama,
+    },
+  });
+  const handleFormSubmit = () => {
+    if (formData.id_kab) {
+      updateOngkir();
+      handleClose();
+    } else {
+      addOngkir();
+      handleClose();
+    }
   };
 
   return (
     <>
+      <FormDialog
+        open={open}
+        handleClose={handleClose}
+        data={formData}
+        onChange={onChange}
+        handleFormSubmit={handleFormSubmit}
+      />
+      <Button onClick={handleClickOpen}>add</Button>
       <Box sx={{ width: "100%" }}>
         <Paper sx={{ width: "100%", mb: 2 }}>
           <EnhancedTableToolbar numSelected={selected.length} />
@@ -117,19 +205,19 @@ export default function Tables({ data, headCells }) {
                 {stableSort(data, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((item, index) => {
-                    const isItemSelected = isSelected(item.id);
+                    const isItemSelected = isSelected(item.id_kab);
                     const labelId = `enhanced-table-checkbox-${index}`;
                     return (
                       <TableRow
                         hover
                         aria-checked={isItemSelected}
                         tabIndex={-1}
-                        key={item.id}
+                        key={item.id_kab}
                         selected={isItemSelected}
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
-                            onClick={(event) => handleClick(event, item.id)}
+                            onClick={(event) => handleClick(event, item.id_kab)}
                             color="primary"
                             checked={isItemSelected}
                             inputProps={{
@@ -144,21 +232,23 @@ export default function Tables({ data, headCells }) {
                           padding="none"
                           align="center"
                         >
-                          {item.id}
+                          {item.id_kab}
                         </TableCell>
-                        <TableCell align="center">{item.no_resi}</TableCell>
+                        <TableCell align="center">{item.id_prov}</TableCell>
+                        <TableCell align="center">{item.nama}</TableCell>
+                        <TableCell align="center">
+                          {item.harga_ongkir}
+                        </TableCell>
                         <TableCell align="center">
                           <Tooltip title="Delete">
-                            <IconButton onClick={() => handleDelete(item.id)}>
+                            <IconButton
+                              onClick={() => handleDelete(item.id_kab)}
+                            >
                               <DeleteIcon />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Update">
-                            <IconButton
-                              onClick={() =>
-                                handleUpdate(item.id, item.no_resi)
-                              }
-                            >
+                            <IconButton onClick={() => handleUpdate(item)}>
                               <EditIcon />
                             </IconButton>
                           </Tooltip>
@@ -193,9 +283,10 @@ export default function Tables({ data, headCells }) {
           />
         </Paper>
       </Box>
-      <EditModal id={id} resi={value} />
-      {/* <DeleteData id={id} />
-      <UpdateData id={id} resi={value} /> */}
+      {isOpen && <EditModal items={value} />}
+      {isOpen && <DeleteModal id={id} />}
+      {/* <DeleteData id={id} /> */}
+      {/* <UpdateData id={id} resi={value} /> */}
     </>
   );
 }

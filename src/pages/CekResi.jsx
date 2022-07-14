@@ -65,7 +65,6 @@ export default function CekResi() {
         </Stack>
       </Box>
       <AddData />
-
       {loading ? (
         <ThreeDots color="#00BFFF" height={100} width={100} />
       ) : (

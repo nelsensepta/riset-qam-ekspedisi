@@ -1,28 +1,31 @@
 import { Box } from "@mui/material";
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useSubscription } from "@apollo/client";
 import Stack from "@mui/material/Stack";
 import { ThreeDots } from "react-loader-spinner";
 import { CustomizedButton as Button } from "../components/CustomizedButton";
 import { TransitionsModal as Modal } from "../components/TransitionsModal";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import Table2 from "../components/Table2";
-import Tables from "../components/Tables";
+import TableOngkir from "../components/TableOngkir";
 export default function CekOngkir() {
   const [open, setOpen] = React.useState(false);
   const GET_CEK_RESI = gql`
-    query getAllOngkir {
-      cek_ongkir(limit: 10) {
+    subscription MySubscription($limit: Int = 10) {
+      cek_ongkir(limit: $limit) {
+        harga_ongkir
         id_kab
         id_prov
         nama
-        harga_ongkir
       }
     }
   `;
 
-  const { loading, error, data } = useQuery(GET_CEK_RESI);
+  const { loading, error, data } = useSubscription(GET_CEK_RESI, {
+    variables: {
+      limit: 25,
+    },
+  });
   const headCells = [
     {
       id: "id_kab",
@@ -40,6 +43,7 @@ export default function CekOngkir() {
       id: "harga_ongkir",
       label: "Harga Ongkir",
     },
+    { id: "action", label: "Action" },
   ];
   const top100Films = [
     { label: "The Shawshank Redemption", year: 1994 },
@@ -50,6 +54,7 @@ export default function CekOngkir() {
     { label: "Schindler's List", year: 1993 },
     { label: "Pulp Fiction", year: 1994 },
   ];
+  // console.log(data);
   return (
     <>
       <Box sx={{ display: "flex", mb: 3 }}>
@@ -100,8 +105,7 @@ export default function CekOngkir() {
       {loading ? (
         <ThreeDots color="#00BFFF" height={100} width={100} />
       ) : (
-        <Tables data={data.cek_ongkir} headCells={headCells} />
-        // <Table2 />
+        <TableOngkir headCells={headCells} data={data.cek_ongkir} />
       )}
     </>
   );
