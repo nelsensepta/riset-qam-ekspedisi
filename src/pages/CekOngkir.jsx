@@ -38,7 +38,7 @@ export default function CekOngkir() {
     },
     {
       id: "harga_ongkir",
-      label: "harga_ongkir",
+      label: "Harga Ongkir",
     },
   ];
   const top100Films = [

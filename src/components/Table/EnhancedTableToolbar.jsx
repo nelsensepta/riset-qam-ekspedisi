@@ -37,7 +37,7 @@ export default function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          Cek Resi
         </Typography>
       )}
 

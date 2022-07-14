@@ -6,15 +6,20 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Auth0Provider } from "@auth0/auth0-react";
 import {
-  ApolloProvider,
   ApolloClient,
   InMemoryCache,
+  ApolloProvider,
+  split,
   createHttpLink,
+  ApolloLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { getMainDefinition } from "@apollo/client/utilities";
 import { BrowserRouter } from "react-router-dom";
 import Layout from "./components/Layout";
 import { RecoilRoot } from "recoil";
+import { createClient } from "graphql-ws";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const authLink = setContext((_, { headers }) => {
@@ -30,8 +35,31 @@ const httpLink = createHttpLink({
   uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
 });
 
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: process.env.REACT_APP_GRAPHQL_WEBSOCKET,
+    reconnect: true,
+    connectionParams: {
+      headers: {
+        "x-hasura-admin-secret": process.env.REACT_APP_GRAPHQL_KEY,
+      },
+    },
+  })
+);
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  httpLink
+);
+
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: ApolloLink.from([authLink, splitLink]),
   cache: new InMemoryCache(),
 });
 root.render(

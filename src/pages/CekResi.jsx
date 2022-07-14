@@ -1,24 +1,29 @@
 import { Box } from "@mui/material";
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useSubscription } from "@apollo/client";
+// import gql from "graphql-ws";
 import Stack from "@mui/material/Stack";
 import { ThreeDots } from "react-loader-spinner";
 import { CustomizedButton as Button } from "../components/CustomizedButton";
 import { TransitionsModal as Modal } from "../components/TransitionsModal";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import Table2 from "../components/Table2";
 import Tables from "../components/Tables";
+import { useRecoilState } from "recoil";
+import { openState } from "../atoms";
+import AddData from "../components/AddData";
 
 export default function CekResi() {
+  const [isOpen, setIsOpen] = useRecoilState(openState);
   const GET_CEK_RESI = gql`
-    query getAllResi {
-      cek_resi(limit: 10) {
+    subscription MySubscription($limit: Int = 10) {
+      cek_resi(limit: $limit) {
         id
         no_resi
       }
     }
   `;
+
   // const gqlVariables = {
   //   limit: 2,
   //   offset: 1,
@@ -32,7 +37,12 @@ export default function CekResi() {
     { label: "Schindler's List", year: 1993 },
     { label: "Pulp Fiction", year: 1994 },
   ];
-  const { loading, error, data } = useQuery(GET_CEK_RESI);
+  const { loading, error, data } = useSubscription(GET_CEK_RESI, {
+    variables: {
+      limit: 25,
+    },
+  });
+  // const { loading, error, data } = useQuery(ADD_RESI);
   const headCells = [
     {
       id: "id",
@@ -42,59 +52,24 @@ export default function CekResi() {
       id: "no_resi",
       label: "No Resi",
     },
+    {
+      id: "action",
+      label: "Action",
+    },
   ];
   return (
     <>
       <Box sx={{ display: "flex", mb: 3 }}>
         <Stack direction="row" spacing={{ xs: 1, sm: 2, md: 3 }}>
-          <Button onClick={() => console.log("ok")}>Add New Resi</Button>
+          <Button onClick={() => setIsOpen(true)}>Add New Resi</Button>
         </Stack>
       </Box>
-      <Modal>
-        <Stack spacing={2} direction="row">
-          <Autocomplete
-            disablePortal
-            id="combo-box-demo"
-            options={top100Films}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Prov" />}
-          />
-          <Autocomplete
-            disablePortal
-            id="combo-box-demo"
-            options={top100Films}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Kab" />}
-          />
-          {/* <TextField
-            sx={{ width: 300 }}
-            id="outlined-basic"
-            label="Nama"
-            variant="outlined"
-          />
-          <TextField
-            label="Harga"
-            id="outlined-start-adornment"
-            sx={{ width: 300 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">Rp</InputAdornment>
-              ),
-            }}
-          /> */}
-          <TextField
-            label="Harga"
-            id="outlined-start-adornment"
-            sx={{ width: 300 }}
-            type="number"
-          />
-        </Stack>
-      </Modal>
+      <AddData />
+
       {loading ? (
         <ThreeDots color="#00BFFF" height={100} width={100} />
       ) : (
         <Tables data={data.cek_resi} headCells={headCells} />
-        // <Table2 />
       )}
     </>
   );
