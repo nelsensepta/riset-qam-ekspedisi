@@ -5,6 +5,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import CekOngkir from "./pages/CekOngkir";
 import CekResi from "./pages/CekResi";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           element={<ProtectedRoute component={CekResi} />}
         />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

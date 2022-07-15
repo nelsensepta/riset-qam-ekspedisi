@@ -49,7 +49,16 @@ function Navbar(props) {
         {navItems.map((item) => (
           <ListItem key={item.slug} disablePadding>
             <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary={item.name} />
+              <NavLink
+                to={`/home/${item.slug}`}
+                style={({ isActive }) => ({
+                  color: isActive ? "blue" : "black",
+                  textDecoration: "none",
+                  marginRight: "10px",
+                })}
+              >
+                <ListItemText primary={item.name} />
+              </NavLink>
             </ListItemButton>
           </ListItem>
         ))}
@@ -64,7 +73,13 @@ function Navbar(props) {
     <Box sx={{ display: "flex" }}>
       <AppBar component="nav">
         <Container fixed>
-          <Toolbar style={{ padding: 0 }}>
+          <Toolbar
+            style={{
+              padding: 0,
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -107,7 +122,6 @@ function Navbar(props) {
                 : null}
             </Box>
             {isAuthenticated ? <LogoutButton /> : null}
-            {!isAuthenticated ? <LoginButton /> : null}
           </Toolbar>
         </Container>
       </AppBar>
@@ -128,7 +142,7 @@ function Navbar(props) {
             },
           }}
         >
-          {drawer}
+          {isAuthenticated ? drawer : null}
         </Drawer>
       </Box>
     </Box>
