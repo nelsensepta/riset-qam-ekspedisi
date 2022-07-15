@@ -13,7 +13,7 @@ const LoginButton = () => {
         variant="contained"
         color="primary"
       >
-        Sign In
+        Login
       </Button>
     )
   );

@@ -11,6 +11,7 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
+  Stack,
 } from "@mui/material";
 
 import EnhancedTableHead from "./Table/EnhancedTableHead";
@@ -24,11 +25,12 @@ import FormDialog from "./Ongkir/FormDialog";
 import { CustomizedButton as Button } from "./CustomizedButton";
 import { gql, useMutation } from "@apollo/client";
 import AlertDialog from "./AlertDialog";
+import FormSearch from "./FormSearch";
 
 const initialValue = { nama: "", harga_ongkir: "" };
 export default function TableOngkir({ data, headCells }) {
   const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("");
+  const [orderBy, setOrderBy] = useState("nama");
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -209,9 +211,20 @@ export default function TableOngkir({ data, headCells }) {
         handleAlert={handleAlert}
         // id={id}
       />
-      <Button onClick={handleClickOpen} sx={{ px: 2, py: 1, mb: 4 }}>
-        Add New Ongkir
-      </Button>
+      <Box
+        sx={{
+          mb: 4,
+          width: "100%",
+          justifyContent: "space-between",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <Button onClick={handleClickOpen} sx={{ px: 2, py: 1 }}>
+          Add New Ongkir
+        </Button>
+        {/* <FormSearch /> */}
+      </Box>
       <Box sx={{ width: "100%" }}>
         <Paper sx={{ width: "100%", mb: 2 }}>
           <EnhancedTableToolbar numSelected={selected.length} />

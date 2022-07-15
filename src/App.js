@@ -7,30 +7,6 @@ import CekOngkir from "./pages/CekOngkir";
 import CekResi from "./pages/CekResi";
 
 function App() {
-  // const authLink = setContext((_, { headers }) => {
-  //   // get the authentication token from local cookie if it exists
-  //   return {
-  //     headers: {
-  //       ...headers,
-  //       authorization: token ? `Bearer ${token}` : "",
-  //     },
-  //   };
-  // });
-  // const client = new ApolloClient({
-  //   uri: "https://graphql-pokeapi.vercel.app/api/graphql",
-  //   cache: new InMemoryCache(),
-  // });
-  // const [token, setToken] = useState("");
-  // const { isLoading, error, getIdTokenClaims, user } = useAuth0();
-  // useEffect(() => {}, []);
-  // getIdTokenClaims().then((res) => {
-  //   // console.log(res);
-  //   if (res) {
-  //     setToken(res.__raw);
-  //   }
-  // });
-  // console.log(token);
-
   return (
     <Routes>
       <Route index path="/" element={<Login />} />

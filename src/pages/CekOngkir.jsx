@@ -38,6 +38,10 @@ export default function CekOngkir() {
     { id: "action", label: "Action" },
   ];
 
+  if (error) {
+    return <p>Error</p>;
+  }
+
   return (
     <>
       {loading ? (

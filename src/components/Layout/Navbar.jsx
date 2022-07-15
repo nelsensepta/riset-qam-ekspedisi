@@ -13,18 +13,15 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { useAuth0 } from "@auth0/auth0-react";
-// import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import { NavLink } from "react-router-dom";
-// import { NavigateBefore } from "@mui/icons-material";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { CustomizedButton as Button } from "../CustomizedButton";
+import { NavLink, Link } from "react-router-dom";
+
 import LoginButton from "../LoginButton";
 import LogoutButton from "../LogoutButton";
 const drawerWidth = 240;
 
 function Navbar(props) {
-  const { logout, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated } = useAuth0();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const navItems = [
@@ -37,9 +34,6 @@ function Navbar(props) {
       slug: "cek-resi",
     },
   ];
-  // React.useEffect(() => {
-  //   return () => (isAuthenticated ? setNavItems([]) : setNavItems(navItems));
-  // }, [isAuthenticated, navItems]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -85,7 +79,15 @@ function Navbar(props) {
               component="div"
               sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
             >
-              QAM
+              <Link
+                to="home"
+                style={{
+                  color: "white",
+                  textDecoration: "none",
+                }}
+              >
+                QAM
+              </Link>
             </Typography>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
               {isAuthenticated
