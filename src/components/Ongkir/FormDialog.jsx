@@ -27,7 +27,7 @@ export default function FormDialog({
               name="nama"
               value={nama}
               onChange={(e) => onChange(e)}
-              label="nama"
+              label="Nama"
               variant="outlined"
               margin="dense"
               fullWidth
@@ -36,7 +36,7 @@ export default function FormDialog({
               name="harga_ongkir"
               value={harga_ongkir}
               onChange={(e) => onChange(e)}
-              label="harga_ongkir Number"
+              label="Harga Ongkir"
               variant="outlined"
               margin="dense"
               fullWidth

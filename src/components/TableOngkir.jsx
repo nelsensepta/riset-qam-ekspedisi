@@ -169,6 +169,27 @@ export default function TableOngkir({ data, headCells }) {
     }
   };
 
+  const DELETE_ONGKIR = gql`
+    mutation MyMutation($id_kab: uuid = "") {
+      delete_cek_ongkir_by_pk(id_kab: $id_kab) {
+        harga_ongkir
+        id_kab
+        id_prov
+        nama
+      }
+    }
+  `;
+  const [deleteData] = useMutation(DELETE_ONGKIR, {
+    variables: {
+      id_kab: id,
+    },
+  });
+
+  const handleAlert = () => {
+    deleteData();
+    alertHandleClose();
+  };
+
   const alertHandleClose = () => {
     setAlertOpen(false);
   };
@@ -185,7 +206,8 @@ export default function TableOngkir({ data, headCells }) {
       <AlertDialog
         alertOpen={alertOpen}
         alertHandleClose={alertHandleClose}
-        id={id}
+        handleAlert={handleAlert}
+        // id={id}
       />
       <Button onClick={handleClickOpen} sx={{ px: 2, py: 1, mb: 4 }}>
         Add New Ongkir

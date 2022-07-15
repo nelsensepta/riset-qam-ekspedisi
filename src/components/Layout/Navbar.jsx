@@ -104,7 +104,8 @@ function Navbar(props) {
                   ))
                 : null}
             </Box>
-            {isAuthenticated ? <LogoutButton /> : <LoginButton />}
+            {isAuthenticated ? <LogoutButton /> : null}
+            {!isAuthenticated ? <LoginButton /> : null}
           </Toolbar>
         </Container>
       </AppBar>

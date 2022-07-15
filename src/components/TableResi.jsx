@@ -26,6 +26,7 @@ import FormDialog from "./Resi/FormDialog";
 import { CustomizedButton as Button } from "./CustomizedButton";
 
 import { gql, useMutation } from "@apollo/client";
+import AlertDialog from "./AlertDialog";
 
 const initialValue = { no_resi: "" };
 export default function Tables({ data, headCells }) {
@@ -157,6 +158,29 @@ export default function Tables({ data, headCells }) {
     }
   };
 
+  const DELETE_RESI = gql`
+    mutation MyMutation($id: uuid = "") {
+      delete_cek_resi_by_pk(id: $id) {
+        no_resi
+        id
+      }
+    }
+  `;
+  const [deleteData] = useMutation(DELETE_RESI, {
+    variables: {
+      id: id,
+    },
+  });
+
+  const handleAlert = () => {
+    deleteData();
+    alertHandleClose();
+  };
+
+  const alertHandleClose = () => {
+    setAlertOpen(false);
+  };
+
   return (
     <>
       <FormDialog
@@ -165,6 +189,11 @@ export default function Tables({ data, headCells }) {
         data={formData}
         onChange={onChange}
         handleFormSubmit={handleFormSubmit}
+      />
+      <AlertDialog
+        alertOpen={alertOpen}
+        alertHandleClose={alertHandleClose}
+        handleAlert={handleAlert}
       />
       <Button onClick={handleClickOpen} sx={{ px: 2, py: 1, mb: 4 }}>
         Add New Resi
