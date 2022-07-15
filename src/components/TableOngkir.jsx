@@ -11,7 +11,6 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
-  Stack,
 } from "@mui/material";
 
 import EnhancedTableHead from "./Table/EnhancedTableHead";
@@ -25,7 +24,6 @@ import FormDialog from "./Ongkir/FormDialog";
 import { CustomizedButton as Button } from "./CustomizedButton";
 import { gql, useMutation } from "@apollo/client";
 import AlertDialog from "./AlertDialog";
-import FormSearch from "./FormSearch";
 
 const initialValue = { nama: "", harga_ongkir: "" };
 export default function TableOngkir({ data, headCells }) {
